@@ -11,12 +11,12 @@ import java.util.List;
 @Setter
 @Entity
 public class Post {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
     private String content;
     private LocalDateTime created;
-    @OneToMany
-    @JoinColumn(name = "postId")
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "postId", updatable = false, insertable = true)
     private List<Comment> comments;
 }

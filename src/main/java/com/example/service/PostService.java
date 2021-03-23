@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,5 +44,21 @@ public class PostService {
         return comments.stream()
                 .filter(comment -> comment.getPostId() == postId)
                 .collect(Collectors.toList());
+    }
+
+    public Post createPost(Post post) {
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post editPost(Post post) {
+        Post editedPost = postRepository.findById(post.getId()).orElseThrow(); // fetching post -> first transaction
+        editedPost.setTitle(post.getTitle()); // editing post -> second transaction
+        editedPost.setContent(post.getContent());
+        return editedPost;
+    }
+
+    public void deletePost(long postId) {
+        postRepository.deleteById(postId);
     }
 }
